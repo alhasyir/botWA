@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Klinik Gigi Tobi</title>
+    <title>Dashboard Klinik Gigi Tobi (Meta WA API)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="/socket.io/socket.io.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -35,18 +34,17 @@
 <body class="h-full">
     <div class="min-h-full flex flex-col">
         <!-- Navigation -->
-        <nav class="bg-slate-800 shadow-md">
+        <nav class="bg-indigo-900 shadow-md">
             <div class="max-w-full mx-auto px-6 lg:px-10">
                 <div class="flex justify-between h-16 items-center">
                     <div class="flex items-center space-x-2 text-white">
                         <span class="text-2xl">🦷</span>
-                        <h1 class="text-xl font-bold tracking-tight text-slate-100">Klinik Gigi Tobi</h1>
+                        <h1 class="text-xl font-bold tracking-tight text-slate-100">Klinik Gigi Tobi Admin</h1>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <div
-                            class="flex items-center space-x-2 bg-slate-700 px-3 py-1.5 rounded-full border border-slate-600">
-                            <span id="status-dot" class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
-                            <span id="status-text" class="text-sm font-medium text-slate-300">Terputus</span>
+                        <div class="flex items-center space-x-2 bg-indigo-800 px-3 py-1.5 rounded-full border border-indigo-700">
+                            <span id="status-dot" class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="status-text" class="text-sm font-medium text-slate-100">Meta API Connected</span>
                         </div>
                     </div>
                 </div>
@@ -58,36 +56,25 @@
                 <!-- Sidebar Controls -->
                 <div class="lg:col-span-1 space-y-6">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                        <h2 class="text-lg font-semibold text-slate-900 mb-4">Kendali Bot</h2>
+                        <h2 class="text-lg font-semibold text-slate-900 mb-4">Quick Links</h2>
                         <div class="flex flex-col space-y-3">
-                            <button id="start-btn"
-                                class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-medium transition duration-200 shadow-md transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none">
-                                <span>▶️</span> <span>Mulai Bot</span>
-                            </button>
-                            <button id="stop-btn"
-                                class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-medium transition duration-200 shadow-md transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none">
-                                <span>⏹️</span> <span>Hentikan Bot</span>
-                            </button>
-                            <hr class="border-slate-100 my-2">
                             <a href="/jadwal.html" target="_blank"
                                 class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl font-medium transition duration-200 border border-indigo-100">
                                 <span>📅</span> <span>Lihat Jadwal Publik</span>
                             </a>
+                            <button onclick="fetchReservations()"
+                                class="w-full flex items-center justify-center space-x-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition duration-200">
+                                <span>🔄</span> <span>Refresh Data</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                        <h2 class="text-lg font-semibold text-slate-900 mb-2">Aktivasi WA</h2>
-                        <p class="text-sm text-slate-500 mb-4">Silakan scan QR Code untuk menghubungkan bot.</p>
-                        <div id="qr-container"
-                            class="aspect-square flex flex-col items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl overflow-hidden p-4">
-                            <div id="qr-placeholder" class="text-center">
-                                <span class="text-4xl block mb-2 font-light text-slate-400">📱</span>
-                                <span class="text-sm text-slate-400 font-medium">Bot belum aktif</span>
-                            </div>
-                            <img id="qr-image" class="w-full h-full object-contain hidden">
+                    <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-6">
+                        <h2 class="text-sm font-bold text-indigo-900 uppercase tracking-widest mb-2">Meta WA Info</h2>
+                        <p class="text-xs text-indigo-700 mb-4">Integrasi Meta WhatsApp Cloud API sedang aktif. Pesan akan masuk secara otomatis melalui webhook.</p>
+                        <div class="p-3 bg-white rounded-xl border border-indigo-200 text-[10px] font-mono text-indigo-500 overflow-hidden">
+                           Webhook: /webhook
                         </div>
-                        <p id="log-msg" class="mt-4 text-xs text-center text-slate-400 italic"></p>
                     </div>
                 </div>
 
@@ -95,79 +82,84 @@
                 <div class="lg:col-span-4 space-y-6">
                     <!-- Filters -->
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div class="flex items-center gap-4">
-                                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Klinik Gigi Tobi</h1>
-                                <button onclick="location.reload()"
-                                    class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition shadow-sm"
-                                    title="Refresh Dashboard">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                                        </path>
-                                    </svg>
-                                </button>
+                                <h1 class="text-2xl font-black text-slate-800 tracking-tight">Antrean Pasien</h1>
+                                <span id="data-count" class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full">0 Data</span>
                             </div>
                             <div class="flex flex-wrap gap-3">
                                 <div class="relative">
                                     <input type="text" id="filter-nama" placeholder="Cari nama..."
-                                        class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-slate-400 text-sm outline-none transition w-full md:w-60">
+                                        class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 text-sm outline-none transition w-full md:w-60">
                                     <span class="absolute left-3 top-2.5 text-slate-400 text-sm">🔍</span>
                                 </div>
                                 <select id="filter-dokter"
-                                    class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-slate-400 text-sm outline-none transition min-w-[180px]">
+                                    class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 text-sm outline-none transition min-w-[180px]">
                                     <option value="">Semua Dokter</option>
-                                </select>
-                                <select id="filter-hari"
-                                    class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-slate-400 text-sm outline-none transition min-w-[140px]">
-                                    <option value="">Semua Hari</option>
-                                    <option value="Senin">Senin</option>
-                                    <option value="Selasa">Selasa</option>
-                                    <option value="Rabu">Rabu</option>
-                                    <option value="Kamis">Kamis</option>
-                                    <option value="Jumat">Jumat</option>
-                                    <option value="Sabtu">Sabtu</option>
-                                    <option value="Minggu">Minggu</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Table -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <!-- Tabs/Navigation -->
+                    <div class="flex space-x-1 bg-white p-1 rounded-2xl shadow-sm border border-slate-200 w-fit">
+                        <button onclick="showSection('antrean')" id="btn-antrean"
+                            class="px-6 py-2 rounded-xl text-sm font-bold transition-all duration-200 bg-indigo-600 text-white shadow-sm">
+                            📋 Antrean
+                        </button>
+                        <button onclick="showSection('jadwal')" id="btn-jadwal"
+                            class="px-6 py-2 rounded-xl text-sm font-bold transition-all duration-200 text-slate-500 hover:bg-slate-50">
+                            📅 Jam Praktik
+                        </button>
+                    </div>
+
+                    <!-- Table Antrean -->
+                    <div id="section-antrean" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-100">
-                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">
-                                            Identitas Pasien</th>
-                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">
-                                            Keluhan</th>
-                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">
-                                            Jadwal & Dokter</th>
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs whitespace-nowrap">Identitas Pasien</th>
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Detail Keluhan</th>
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs whitespace-nowrap">Jadwal & Dokter</th>
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Status Kunjungan</th>
                                     </tr>
                                 </thead>
                                 <tbody id="res-table" class="divide-y divide-slate-50">
-                                    <tr>
-                                        <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">
-                                            <div class="flex flex-col items-center">
-                                                <svg class="animate-spin h-8 w-8 text-slate-400 mb-3"
-                                                    viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10"
-                                                        stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor"
-                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                                    </path>
-                                                </svg>
-                                                Memuat data...
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <!-- Data will be populated here -->
                                 </tbody>
                             </table>
                         </div>
                         <div id="no-data" class="hidden py-12 text-center text-slate-400 bg-white">
-                            Tidak ada data yang sesuai dengan filter.
+                            Tidak ada antrean terdaftar.
+                        </div>
+                    </div>
+
+                    <!-- Table Jadwal (Hidden by default) -->
+                    <div id="section-jadwal" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <div>
+                                <h3 class="font-bold text-slate-800">Manajemen Jam Praktik</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Semua perubahan di sini akan otomatis update ke halaman jadwal publik.</p>
+                            </div>
+                            <button onclick="alert('Fitur edit langsung segera hadir!')" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition shadow-md">
+                                + Tambah Slot Jam
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-100">
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Hari</th>
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Jam Praktik</th>
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Dokter</th>
+                                        <th class="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schedule-table" class="divide-y divide-slate-50">
+                                    <!-- Schedule data will be populated here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -176,199 +168,177 @@
 
         <footer class="bg-white border-t border-slate-100 py-6 mt-8">
             <div class="max-w-full mx-auto px-10 text-center text-slate-400 text-sm">
-                &copy; 2026 Klinik Gigi Tobi
+                &copy; 2026 Klinik Gigi Tobi Admin Dashboard
             </div>
         </footer>
     </div>
 
     <script>
-        const socket = io();
-        const startBtn = document.getElementById('start-btn');
-        const stopBtn = document.getElementById('stop-btn');
-        const statusText = document.getElementById('status-text');
-        const statusDot = document.getElementById('status-dot');
-        const qrImage = document.getElementById('qr-image');
-        const qrPlaceholder = document.getElementById('qr-placeholder');
-        const logMsg = document.getElementById('log-msg');
-        const resTable = document.getElementById('res-table');
-        const noData = document.getElementById('no-data');
-
-        // Filter elements
-        const filterNama = document.getElementById('filter-nama');
-        const filterDokter = document.getElementById('filter-dokter');
-        const filterHari = document.getElementById('filter-hari');
-
         let allReservations = [];
 
-        socket.on('status', (status) => {
-            statusText.innerText = status;
-            if (status === 'Online') {
-                statusDot.className = 'h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse';
-                qrImage.classList.add('hidden');
-                qrPlaceholder.innerHTML = '<span class="text-emerald-500 text-4xl block mb-2">✅</span><span class="text-sm font-medium text-emerald-600 uppercase">Bot Aktif</span>';
-                qrPlaceholder.classList.remove('hidden');
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
-            } else if (status === 'Menunggu Scan QR') {
-                statusDot.className = 'h-2.5 w-2.5 rounded-full bg-yellow-400 animate-pulse';
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
-            } else {
-                statusDot.className = 'h-2.5 w-2.5 rounded-full bg-rose-400';
-                qrPlaceholder.classList.remove('hidden');
-                qrImage.classList.add('hidden');
-                startBtn.disabled = status === 'Menghubungkan...';
-                stopBtn.disabled = status === 'Terputus';
-                if (status === 'Terputus') {
-                    qrPlaceholder.innerHTML = '<span class="text-gray-400 text-4xl block mb-2">📱</span><span class="text-sm text-gray-400 uppercase">Bot Terputus</span>';
-                }
+        async function fetchReservations() {
+            try {
+                const response = await fetch('/api/reservations');
+                allReservations = await response.json();
+                document.getElementById('data-count').innerText = `${allReservations.length} Data`;
+                filterAndRender();
+            } catch (error) {
+                console.error('Error fetching reservations:', error);
             }
-        });
-
-        socket.on('qr', (url) => {
-            qrImage.src = url;
-            qrImage.classList.remove('hidden');
-            qrPlaceholder.classList.add('hidden');
-            logMsg.innerText = 'Scan QR ini menggunakan WhatsApp Anda.';
-        });
-
-        socket.on('log', (msg) => {
-            logMsg.innerText = msg;
-        });
-
-        socket.on('reservations', (data) => {
-            allReservations = data;
-            // No longer populate doctor from data, use fixed list from schedule
-            filterAndRender();
-        });
-
-        function populateDoctorFilter() {
-            const doctors = [
-                "drg. Andhika Surya",
-                "drg. Adillah Faridh",
-                "drg. Tiara Edyatami",
-                "drg. Muhammad Habilludin",
-                "drg. Willy Bernadi Sp.BM",
-                "drg. Riski Yunika"
-            ];
-            filterDokter.innerHTML = '<option value="">Semua Dokter</option>' +
-                doctors.map(d => `<option value="${d}">${d}</option>`).join('');
         }
-        populateDoctorFilter();
+
+        async function updateStatus(id, newStatus) {
+            try {
+                const response = await fetch(`/api/reservations/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ statusPasien: newStatus })
+                });
+                if (response.ok) {
+                    fetchReservations(); // Refresh
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
 
         function filterAndRender() {
-            const term = filterNama.value.toLowerCase();
-            const doctor = filterDokter.value.toLowerCase();
-            const day = filterHari.value.toLowerCase();
+            const nameSearch = document.getElementById('filter-nama').value.toLowerCase();
+            const doctorSearch = document.getElementById('filter-dokter').value;
 
             const filtered = allReservations.filter(r => {
-                const rNama = (r.nama || '').toLowerCase();
-                const rDoctor = (r.dokter || '').toLowerCase();
-                const rTanggal = (r.tanggal || '').toLowerCase();
-
-                const matchNama = rNama.includes(term);
-                const matchDoctor = !doctor || rDoctor.includes(doctor.replace(/drg\.|dr\.|drg|dr/g, '').trim().toLowerCase().split(' ')[0]);
-                const matchDay = !day || rTanggal.includes(day);
-
-                return matchNama && matchDoctor && matchDay;
+                const patientName = (r.patient?.nama || '').toLowerCase();
+                const doctorName = (r.doctor?.nama || '');
+                const matchName = patientName.includes(nameSearch);
+                const matchDoctor = !doctorSearch || doctorName === doctorSearch;
+                return matchName && matchDoctor;
             });
-
-            // Urutan Sederhana: Hari Terbaru (berdasarkan isi teks tanggal)
-            filtered.sort((a, b) => (b.id > a.id ? 1 : -1));
 
             renderTable(filtered);
         }
 
         function renderTable(data) {
+            const table = document.getElementById('res-table');
+            const noData = document.getElementById('no-data');
+
             if (data.length === 0) {
-                resTable.innerHTML = '';
+                table.innerHTML = '';
                 noData.classList.remove('hidden');
                 return;
             }
             noData.classList.add('hidden');
 
-            const dayColors = {
-                'senin': 'bg-rose-100 text-rose-700',
-                'selasa': 'bg-orange-100 text-orange-700',
-                'rabu': 'bg-amber-100 text-amber-700',
-                'kamis': 'bg-emerald-100 text-emerald-700',
-                'jumat': 'bg-sky-100 text-sky-700',
-                'sabtu': 'bg-indigo-100 text-indigo-700',
-                'minggu': 'bg-purple-100 text-purple-700'
-            };
+            table.innerHTML = data.map(r => {
+                const typeColors = {
+                    'Lama': 'bg-purple-100 text-purple-700 border-purple-200',
+                    'Baru': 'bg-orange-100 text-orange-700 border-orange-200'
+                };
 
-            const calculateAge = (ttl) => {
-                if (!ttl) return '-';
-                const m = ttl.match(/\d{4}/);
-                return m ? (new Date().getFullYear() - parseInt(m[0])) + ' Thn' : '-';
-            };
-
-            resTable.innerHTML = data.map(r => {
-                const isNew = (r.status || '').toLowerCase().includes('baru');
-                const isOld = (r.status || '').toLowerCase().includes('lama');
-                const statusTag = isNew ? '<span class="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-bold text-[10px]">BARU</span>' : (isOld ? '<span class="px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 font-bold text-[10px]">LAMA</span>' : '');
-
-                const hariFull = (r.tanggal || '').split(',')[0].toLowerCase().trim();
-                const colorClass = dayColors[hariFull] || 'bg-slate-100 text-slate-500';
+                const patient = r.patient || { nama: 'Unknown', nik: '-', alamat: '-', phone_number: '-' };
+                const doctor = r.doctor || { nama: '-' };
 
                 return `
                     <tr class="hover:bg-slate-50 transition border-b border-slate-50">
                         <td class="px-6 py-4">
-                            <div class="flex flex-col">
-                                <div class="font-bold text-slate-800 flex items-center gap-2">${r.nama} ${statusTag}</div>
-                                <div class="text-[11px] text-slate-400">📱 ${r.wa || '-'} | 🎂 ${calculateAge(r.ttl)}</div>
-                                <div class="text-[11px] text-slate-400 italic">${r.alamat || '-'}</div>
-                            </div>
+                            <div class="font-bold text-slate-800">${patient.nama}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">NIK: ${patient.nik}</div>
+                            <div class="text-[10px] text-slate-400">📱 ${patient.phone_number || '-'}</div>
                         </td>
-                        <td class="px-6 py-4 text-xs text-slate-600 font-medium italic">"${r.keluhan || '-'}"</td>
+                        <td class="px-6 py-4 text-xs text-slate-600 italic">"${r.keluhan || '-'}"</td>
                         <td class="px-6 py-4">
-                            <div class="flex flex-col">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-lg font-black text-indigo-600">${r.jam} ${r.jam.includes('WIB') ? '' : 'WIB'}</span>
-                                    <span class="px-2 py-0.5 text-[10px] font-black rounded border ${colorClass} uppercase">${hariFull}</span>
-                                </div>
-                                <div class="text-xs font-bold text-slate-500">👩‍⚕️ ${r.dokter || '-'}</div>
-                                <div class="text-[10px] text-slate-400">${r.tanggal}</div>
-                            </div>
+                            <div class="text-indigo-600 font-bold">${r.jam || '-'}</div>
+                            <div class="text-[10px] text-slate-500 font-medium">${r.tanggal || '-'}</div>
+                            <div class="text-[10px] text-indigo-400 font-semibold uppercase tracking-tight">${doctor.nama}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <select onchange="updateStatus('${r.id}', this.value)" 
+                                class="px-3 py-1 text-[10px] font-bold rounded-full border ${typeColors[r.statusPasien] || 'bg-slate-100'} cursor-pointer outline-none transition-all hover:shadow-sm">
+                                <option value="Lama" ${r.statusPasien === 'Lama' ? 'selected' : ''}>Pasien Lama</option>
+                                <option value="Baru" ${r.statusPasien === 'Baru' ? 'selected' : ''}>Pasien Baru</option>
+                            </select>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        async function updateStatus(id, status) {
+        // Tab Management
+        function showSection(sectionId) {
+            document.getElementById('section-antrean').classList.toggle('hidden', sectionId !== 'antrean');
+            document.getElementById('section-jadwal').classList.toggle('hidden', sectionId !== 'jadwal');
+
+            document.getElementById('btn-antrean').className = sectionId === 'antrean' 
+                ? 'px-6 py-2 rounded-xl text-sm font-bold transition-all duration-200 bg-indigo-600 text-white'
+                : 'px-6 py-2 rounded-xl text-sm font-bold transition-all duration-200 text-slate-500 hover:bg-slate-50';
+            
+            document.getElementById('btn-jadwal').className = sectionId === 'jadwal' 
+                ? 'px-6 py-2 rounded-xl text-sm font-bold transition-all duration-200 bg-indigo-600 text-white'
+                : 'px-6 py-2 rounded-xl text-sm font-bold transition-all duration-200 text-slate-500 hover:bg-slate-50';
+
+            if (sectionId === 'jadwal') fetchSchedules();
+        }
+
+        async function fetchSchedules() {
             try {
-                const res = await fetch('/update-status', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, status })
-                });
-                if (res.ok) {
-                    console.log('Status updated');
-                }
+                const response = await fetch('/api/schedule');
+                const schedules = await response.json();
+                renderScheduleTable(schedules);
             } catch (err) {
-                alert('Gagal update status');
+                console.error('Error fetching schedules:', err);
             }
         }
 
-        filterNama.addEventListener('input', filterAndRender);
-        filterDokter.addEventListener('change', filterAndRender);
-        filterHari.addEventListener('change', filterAndRender);
+        function minutesToTime(m) {
+            const h = Math.floor(m / 60);
+            const mm = m % 60;
+            return `${h.toString().padStart(2, '0')}.${mm.toString().padStart(2, '0')}`;
+        }
 
-        startBtn.onclick = () => {
-            socket.emit('control', 'start');
-            logMsg.innerText = 'Sedang memulai bot...';
-            startBtn.disabled = true;
-        };
+        function renderScheduleTable(data) {
+            const table = document.getElementById('schedule-table');
+            let html = '';
+            
+            // Re-map for flat list to show in table
+            const days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+            days.forEach(day => {
+                if (data[day]) {
+                    data[day].forEach(s => {
+                        html += `
+                            <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                                <td class="px-6 py-4 font-bold text-slate-800 capitalize">${day}</td>
+                                <td class="px-6 py-4 font-mono text-indigo-600">${minutesToTime(s.start)} - ${minutesToTime(s.end)}</td>
+                                <td class="px-6 py-4 text-slate-600">${s.drs.join(', ')}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button onclick="alert('Edit soon!')" class="text-indigo-400 hover:text-indigo-600 font-bold px-2">✏️</button>
+                                    <button onclick="alert('Delete soon!')" class="text-rose-400 hover:text-rose-600 font-bold px-2">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            });
+            table.innerHTML = html || '<tr><td colspan="4" class="p-10 text-center text-slate-400">Belum ada jadwal tersimpan.</td></tr>';
+        }
 
-        stopBtn.onclick = () => {
-            socket.emit('control', 'stop');
-            logMsg.innerText = 'Menghentikan bot...';
-            stopBtn.disabled = true;
-        };
+        // Populate doctor filter update
+        async function updateDoctorFilter() {
+            const doctorFilter = document.getElementById('filter-dokter');
+            if (doctorFilter.options.length <= 1) {
+                const doctors = [...new Set(allReservations.map(r => r.doctor?.nama).filter(Boolean))];
+                doctors.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.innerText = d;
+                    doctorFilter.appendChild(opt);
+                });
+            }
+        }
 
-        socket.emit('get-reservations');
+        document.getElementById('filter-nama').addEventListener('input', filterAndRender);
+        document.getElementById('filter-dokter').addEventListener('change', filterAndRender);
+
+        // Initial Load
+        fetchReservations().then(updateDoctorFilter);
     </script>
 </body>
-
 </html>

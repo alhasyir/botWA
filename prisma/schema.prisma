@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Doctor {
+  id           String        @id @default(uuid())
+  nama         String        @unique
+  schedules    Schedule[]
+  reservations Reservation[]
+
+  @@map("doctors")
+}
+
+model Schedule {
+  id           String   @id @default(uuid())
+  doctorId     String
+  doctor       Doctor   @relation(fields: [doctorId], references: [id])
+  day          String   // senin, selasa, dst.
+  startMinutes Int      // Jam mulai (dalam menit, misal 09:00 = 540)
+  endMinutes   Int      // Jam selesai
+  
+  @@map("schedules")
+}
+
+model Patient {
+  id           String        @id @default(uuid())
+  nik          String        @unique
+  nama         String
+  ttl          String?
+  gender       String?
+  alamat       String?
+  wa           String?
+  phone_number String        @map("from_number")
+  reservations Reservation[]
+
+  @@map("patients")
+}
+
+model Reservation {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  doctorId      String
+  doctor        Doctor   @relation(fields: [doctorId], references: [id])
+  keluhan       String?
+  tanggal       String?
+  jam           String?
+  timestamp     DateTime @default(now())
+  statusPasien  String   @default("Baru") // Status: Lama / Baru
+
+  @@map("reservations")
+}
