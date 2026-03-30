@@ -1,3 +1,12 @@
-2026/03/29-13:49:34.185 52e4 Reusing MANIFEST C:\Users\alhas\OneDrive\Desktop\Bot WA\.wwebjs_auth\session-klinik-gigi-bot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2026/03/29-13:49:34.185 52e4 Recovering log #97
-2026/03/29-13:49:34.207 52e4 Reusing old log C:\Users\alhas\OneDrive\Desktop\Bot WA\.wwebjs_auth\session-klinik-gigi-bot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000097.log 
+2026/03/30-18:17:01.214 427c Reusing MANIFEST C:\Users\user\Desktop\Bot WA\.wwebjs_auth\session-klinik-gigi-bot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/03/30-18:17:01.215 427c Recovering log #16
+2026/03/30-18:17:01.252 427c Reusing old log C:\Users\user\Desktop\Bot WA\.wwebjs_auth\session-klinik-gigi-bot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000016.log 
+2026/03/30-18:54:26.877 41c8 Level-0 table #21: started
+2026/03/30-18:54:26.916 41c8 Level-0 table #21: 1562471 bytes OK
+2026/03/30-18:54:26.922 41c8 Delete type=0 #16
+2026/03/30-18:54:32.207 427c Compacting 1@1 + 1@2 files
+2026/03/30-18:54:32.445 427c Generated table #22@1: 53102 keys, 2193526 bytes
+2026/03/30-18:54:32.445 427c Compacted 1@1 + 1@2 files => 2193526 bytes
+2026/03/30-18:54:32.447 427c compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/03/30-18:54:32.447 427c Delete type=2 #18
+2026/03/30-18:54:32.447 427c Delete type=2 #21

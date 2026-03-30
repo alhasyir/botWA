@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Dokter - Klinik Gigi Tobi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag-available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .tag-booked {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-wa {
+            background: #25D366;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-wa:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="py-8 px-6 text-center">
+        <div class="inline-flex items-center justify-center p-3 bg-white rounded-2xl shadow-sm mb-4">
+            <span class="text-3xl">🦷</span>
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Klinik Gigi Tobi</h1>
+        <p class="text-slate-500 mt-2 font-medium">Cek jadwal tersedia & booking antrean dengan mudah</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 pb-20">
+        <!-- Schedule Section -->
+        <div class="glass-card rounded-3xl p-6 mb-8 mt-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Timeline Jadwal</h2>
+                    <p class="text-sm text-slate-500">Lihat ketersediaan jam per 30 menit</p>
+                </div>
+                <div class="flex items-center space-x-2 w-full overflow-x-auto pb-4 no-scrollbar">
+                    <div id="day-tabs" class="flex space-x-2">
+                        <!-- Tab hari akan muncul di sini -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="timeline-container" class="space-y-3">
+                <!-- Timeline content -->
+                <div class="animate-pulse space-y-3">
+                    <div class="h-14 bg-slate-100 rounded-2xl"></div>
+                    <div class="h-14 bg-slate-100 rounded-2xl"></div>
+                    <div class="h-14 bg-slate-100 rounded-2xl"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-8 text-center">
+            <a id="booking-link" href="#" target="_blank"
+                class="btn-wa inline-flex items-center px-10 py-5 rounded-2xl font-bold text-xl shadow-lg">
+                <svg class="w-6 h-6 mr-2 fill-current" viewBox="0 0 24 24">
+                    <path
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                </svg>
+                Booking via WhatsApp
+            </a>
+            <p class="text-[10px] text-slate-400 mt-6 tracking-widest font-black uppercase">Official Digital Schedule
+                &bull; Klinik Gigi Tobi</p>
+        </div>
+    </main>
+
+    <script>
+        const dayTabs = document.getElementById('day-tabs');
+        const timelineContainer = document.getElementById('timeline-container');
+        const bookingLink = document.getElementById('booking-link');
+
+        const WA_NUMBER = "6281390149191";
+        const socket = io();
+        setInterval(() => socket.emit('get-reservations'), 10000);
+        let selectedFullDate = "";
+        let allReservations = [];
+
+        const DAYS_INDO = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const MONTHS_INDO = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+        function generateTabs() {
+            const now = new Date();
+            let html = '';
+            for (let i = 0; i < 30; i++) {
+                const date = new Date();
+                date.setDate(now.getDate() + i);
+
+                const dayName = DAYS_INDO[date.getDay()];
+                const dayLabel = dayName.substring(0, 3);
+                const dateNum = date.getDate();
+                const fullDate = `${dayName}, ${dateNum} ${MONTHS_INDO[date.getMonth()]} ${date.getFullYear()}`;
+
+                if (i === 0) selectedFullDate = fullDate;
+
+                html += `
+                    <button onclick="selectDate('${fullDate}', this)" 
+                        class="tab-btn flex flex-col items-center min-w-[70px] p-3 rounded-2xl transition-all duration-300 border-2 ${i === 0 ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-indigo-200'}">
+                        <span class="text-[10px] font-black uppercase tracking-tighter opacity-70">${dayLabel}</span>
+                        <span class="text-xl font-black">${dateNum}</span>
+                    </button>
+                `;
+            }
+            dayTabs.innerHTML = html;
+        }
+
+        function selectDate(fullDate, el) {
+            selectedFullDate = fullDate;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn flex flex-col items-center min-w-[70px] p-3 rounded-2xl transition-all duration-300 border-2 bg-white border-slate-100 text-slate-400 hover:border-indigo-200';
+            });
+            el.className = 'tab-btn flex flex-col items-center min-w-[70px] p-3 rounded-2xl transition-all duration-300 border-2 bg-indigo-600 border-indigo-600 text-white shadow-lg';
+            renderTimeline();
+        }
+
+        const SCHEDULE = {
+            "senin": [
+                { start: 600, end: 780, drs: ["drg. Andhika Surya", "drg. Adillah Faridh"] },
+                { start: 960, end: 1080, drs: ["drg. Tiara Edyatami"] },
+                { start: 1170, end: 1260, drs: ["drg. Andhika Surya"] }
+            ],
+            "selasa": [
+                { start: 600, end: 780, drs: ["drg. Adillah Faridh", "drg. Andhika Surya"] },
+                { start: 840, end: 960, drs: ["drg. Muhammad Habilludin", "drg. Willy Bernadi Sp.BM"] },
+                { start: 960, end: 1080, drs: ["drg. Riski Yunika"] },
+                { start: 1170, end: 1260, drs: ["drg. Adillah Faridh", "drg. Andhika Surya"] }
+            ],
+            "rabu": [
+                { start: 600, end: 780, drs: ["drg. Muhammad Habilludin"] },
+                { start: 960, end: 1080, drs: ["drg. Riski Yunika", "drg. Muhammad Habilludin"] },
+                { start: 1170, end: 1260, drs: ["drg. Andhika Surya", "drg. Muhammad Habilludin"] }
+            ],
+            "kamis": [
+                { start: 600, end: 780, drs: ["drg. Adillah Faridh", "drg. Andhika Surya"] },
+                { start: 840, end: 960, drs: ["drg. Muhammad Habilludin", "drg. Willy Bernadi Sp.BM"] },
+                { start: 960, end: 1080, drs: ["drg. Riski Yunika"] },
+                { start: 1170, end: 1260, drs: ["drg. Adillah Faridh", "drg. Muhammad Habilludin"] }
+            ],
+            "jumat": [
+                { start: 480, end: 660, drs: ["drg. Muhammad Habilludin"] },
+                { start: 840, end: 960, drs: ["drg. Muhammad Habilludin", "drg. Willy Bernadi Sp.BM"] },
+                { start: 960, end: 1080, drs: ["drg. Tiara Edyatami"] },
+                { start: 1170, end: 1260, drs: ["drg. Andhika Surya", "drg. Muhammad Habilludin"] }
+            ],
+            "sabtu": [
+                { start: 600, end: 840, drs: ["drg. Adillah Faridh", "drg. Andhika Surya"] },
+                { start: 1170, end: 1260, drs: ["drg. Andhika Surya"] }
+            ],
+            "minggu": [
+                { start: 780, end: 1260, drs: ["drg. Adillah Faridh", "drg. Andhika Surya"] }
+            ]
+        };
+
+        const TEMPLATE = `📋 *PENDAFTARAN PASIEN*
+
+🪪 *NIK (KTP/KK) Wajib Diisi :*
+👨‍👩‍👦 *Nama Lengkap :*
+⏳️ *Tempat, Tanggal Lahir :*
+📝 *Jenis Kelamin :*
+📍 *Alamat Lengkap :*
+🦷 *Keluhan/Perawatan Gigi :*
+🗒 *Pasien Lama/Baru :*
+👨‍⚕️ *Pilihan Dokter :*
+🗓 *Hari :* [HARI]
+🕓 *Jam kunjungan :* [JAM]
+📱 *No Whatsapp :*`;
+
+        function updateBookingLink(day, time) {
+            let text = TEMPLATE.replace('[HARI]', day).replace('[JAM]', time);
+            bookingLink.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
+        }
+
+        function parseToMinutes(timeStr) {
+            const match = (timeStr || '').match(/(\d{1,2})[:.](\d{2})/);
+            if (match) return parseInt(match[1]) * 60 + parseInt(match[2]);
+            return null;
+        }
+
+        function minutesToTime(m) {
+            const h = Math.floor(m / 60);
+            const mm = m % 60;
+            return `${h.toString().padStart(2, '0')}.${mm.toString().padStart(2, '0')}`;
+        }
+
+        function renderTimeline() {
+            const dayName = selectedFullDate.split(',')[0].toLowerCase();
+            const shifts = SCHEDULE[dayName] || [];
+
+            // Filter reservasi: Cocokkan Tanggal Lengkap ATAU sekadar nama Harinya
+            const reservationsToday = allReservations.filter(r => {
+                const dayMatch = (r.tanggal || '').toLowerCase() === selectedFullDate.toLowerCase();
+                const simpleDay = selectedFullDate.split(',')[0].toLowerCase().trim();
+                const simpleMatch = (r.tanggal || '').toLowerCase() === simpleDay;
+                return dayMatch || simpleMatch;
+            });
+
+            let html = '';
+            if (shifts.length === 0) {
+                timelineContainer.innerHTML = '<p class="text-center py-10 text-slate-400 italic">Maaf, klinik tutup.</p>';
+                return;
+            }
+
+            shifts.forEach(shift => {
+                shift.drs.forEach(drName => {
+                    html += `<div class="mt-6 mb-3 flex items-center space-x-2">
+                        <div class="h-1 w-8 bg-indigo-100 rounded"></div>
+                        <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none">👨‍⚕️ ${drName}</span>
+                    </div>`;
+
+                    for (let m = shift.start; m < shift.end; m += 30) {
+                        const jamText = minutesToTime(m);
+
+                        // Cek apakah slot terisi per dokter (LOGIKA DITINGKATKAN)
+                        const isTaken = reservationsToday.some(r => {
+                            const rMin = parseToMinutes(r.jam);
+                            const matchTime = rMin !== null && Math.abs(rMin - m) < 30;
+
+                            const rDoctor = (r.dokter || '').toLowerCase();
+                            // Ambil kata kunci nama depan/belakang dokter
+                            const cleanDrParts = drName.toLowerCase().replace(/drg\.|dr\.|drg|dr|sp\.bm/g, '').trim().split(' ').filter(p => p.length > 2);
+                            const matchDoc = cleanDrParts.some(p => rDoctor.includes(p));
+
+                            return matchTime && matchDoc;
+                        });
+
+                        const bgClass = isTaken ? 'bg-rose-50/50 border-rose-100 opacity-60' : 'bg-white border-slate-100 hover:border-indigo-200';
+                        const titleClass = isTaken ? 'text-rose-700' : 'text-slate-800';
+                        const badgeClass = isTaken ? 'tag-booked' : 'tag-available';
+                        const statusText = isTaken ? 'DIPESAN' : 'TERSEDIA';
+
+                        html += `
+                            <div onclick="${isTaken ? '' : `updateBookingLink('${selectedFullDate}', '${jamText}')`}" 
+                                class="flex items-center justify-between p-4 rounded-3xl border ${bgClass} shadow-sm transition-all duration-300 mb-2 cursor-pointer">
+                                <div class="flex items-center space-x-6">
+                                    <span class="text-xl font-black ${titleClass}">${jamText}</span>
+                                    <div class="hidden md:block text-[10px] text-slate-300 font-bold uppercase tracking-widest">${drName}</div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="status-badge ${badgeClass}">${statusText}</span>
+                                    ${!isTaken ? '<span class="text-indigo-500 text-lg">›</span>' : ''}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            });
+            timelineContainer.innerHTML = html;
+        }
+
+        // Initialize
+        generateTabs();
+
+        socket.on('connect', () => console.log('📡 Connected to Bot Server'));
+        socket.on('reservations', (data) => {
+            console.log('📦 Data diterima:', data.length);
+            allReservations = data;
+            renderTimeline();
+        });
+
+        socket.emit('get-reservations');
+    </script>
+</body>
+
+</html>
